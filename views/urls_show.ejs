@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TinyApp-ShowURL</title>
+    <style>
+      body {
+        background-color: skyblue;
+        font-family: verdana;
+        color: #fff;
+        padding: 30px;
+      }
+      h1 {
+        font-size: 48px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        color: white;
+      }
+      p {
+        font-size: 16px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+    <p><a href="<%= urls[shortURL] %>"><%= urls[shortURL] %></a> - <%= shortURL %></p>
+  </body>
+</html>

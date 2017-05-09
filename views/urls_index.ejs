@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TinyApp</title>
+    <style>
+      body {
+        background-color: skyblue;
+        font-family: verdana;
+        color: #fff;
+        padding: 30px;
+      }
+      h1 {
+        font-size: 48px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
+        color: white;
+      }
+      p {
+        font-size: 16px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+    <ul>
+      <% for (var url in urls) { %>
+        <li>
+          <a href="<%= urls[url] %>"><%= url[url] %></a> - <%= url %>
+        </li>
+      <% }; %>
+    </ul>
+  </body>
+</html>
