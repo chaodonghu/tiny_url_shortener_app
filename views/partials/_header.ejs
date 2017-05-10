@@ -1,7 +1,36 @@
-<nav>
-  <ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="/urls/new">Add URL</a></li>
-    <li><a href="/urls/">List of URLS</a></li>
-    </ul>
+<!-- <nav>
+
+    <header>
+<% if(!username) { %>
+ +  <form action="/logout" method="POST">
+ +    <%= username %>
+ +    <input type="submit" value="Logout" style="margin:10px;">
+ +  </form>
+ +<% } else { %>
+ +  <form action="/login" method="POST">
+ +    <label for="username">Login</label>
+ +    <input id="username" name="username" type="text" style="width:70px;">
+ +    <input type="submit" value="Submit">
+ +  </form>
+ +<% } %>
   </nav>
+  <header> -->
+<center>
+      <a href="/">Home</a>
+      <a href="/urls/new">Add URL</a>
+      <a href="/urls/">My URLS</a>
+<center>
+
+  <header>
+    <%if (username){%>
+      <h2><%= username %></h2>
+      <form action="/logout" method="POST">
+        <input class="button" type="submit" value="logout">
+      </form>
+    <% } else { %>
+      <form action="/login" method="POST">
+        <input id="username" name="username" type="text">
+        <input type="submit" value="Login">
+      </form>
+    <% } %>
+  </header>
