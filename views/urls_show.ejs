@@ -26,6 +26,14 @@
     <header>
       <% include ./partials/_header %>
     </header>
-    <p><a href="<%= urls[shortURL] %>"><%= urls[shortURL] %></a> - <%= shortURL %></p>
+    <h2>ShortURL: <strong><%= shortURL %></strong></h2>
+
+    <p>
+      <form class = 'urls-show-form' method="POST" action="/urls/<%= shortURL %>">
+        <input id='longURL' type='text' name='newURL' value='<%= longURL %>'>
+        <button type='submit' value='update'/>Update</button>
+      </form>
+    </p>
+    </ul>
   </body>
 </html>

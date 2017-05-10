@@ -20,18 +20,29 @@
         font-size: 16px;
         text-align: center;
       }
+      table#t01 {
+        width:100%;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
     <header>
       <% include ./partials/_header %>
     </header>
-    <ul>
+    <table id = "t01">
       <% for (var url in urls) { %>
-        <li>
-          <a href="<%= urls[url] %>"><%= url[url] %></a> - <%= url %>
-        </li>
+        <tr>
+        <td>
+          <form id = 'delete-url' method="POST" action="/urls/<%= url %>/delete">
+            <td><a href="<%= urls[url] %>"><%= url %></a> -> <%= urls[url] %></td>
+            <td><a href="/urls/<%= url %>">Edit</a></td>
+            <td><button type='submit' value='Delete'/>Delete</button></td>
+          </form>
+        </td>
+      </tr>
       <% }; %>
-    </ul>
+
+    </table>
   </body>
 </html>
