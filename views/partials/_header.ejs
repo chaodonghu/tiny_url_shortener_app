@@ -4,8 +4,8 @@
       <a href="/urls/">My URLS</a>
 <center>
   <header>
-    <%if (username){%>
-      <h2><%= username %></h2>
+    <%if (email){%>
+      <h2><%= email %></h2>
       <form action="/logout" method="POST">
         <input class="button" type="submit" value="logout">
       </form>

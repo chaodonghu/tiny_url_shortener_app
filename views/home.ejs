@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TinyApp-ShowURL</title>
+    <title>TinyApp</title>
     <style>
       body {
         background-color: skyblue;
@@ -20,20 +20,17 @@
         font-size: 16px;
         text-align: center;
       }
+      table#t01 {
+        width:100%;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
     <header>
       <% include ./partials/_header %>
     </header>
-    <h2>ShortURL: <strong><%= shortURL %></strong></h2>
-
-    <p>
-      <form class = 'urls-show-form' method="POST" action="/urls/<%= shortURL %>">
-        <input id='url' type='text' name='newURL' value='<%= url %>'>
-        <button type='submit' value='update'/>Update</button>
-      </form>
-    </p>
-    </ul>
+    <h2>Welcome to Tiny URL App</h2>
+    <p><a href="/login">Login</a> or <a href="/register">Register</a> to begin.</p>
   </body>
 </html>

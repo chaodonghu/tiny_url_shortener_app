@@ -14,9 +14,16 @@ app.use(cookieParser());
 const PORT = process.env.PORT || 8080; // default port 8080
 // Defines database of urls
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    url: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    url: "http://www.google.com",
+    userID: "user2RandomID"
+  }
 };
+
 // Defines database of users
 const users = {
   "userRandomID": {
@@ -53,11 +60,18 @@ function canRegister(email) {
   return true;
 }
 
-/* GET REQUEST RESPONSES */
+// Function that obtains urls associated with userID
+function urlsForUser(id) {
+  var result = {};
+  for (var shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      result[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return result;
+}
 
-app.get("/", (req, res) => {
-  res.end("Hello!");
-});
+/* GET REQUEST RESPONSES */
 
 // Display object of all urls
 app.get("/urls.json", (req, res) => {
@@ -69,68 +83,124 @@ app.get("/users.json", (req, res) => {
   res.json(users);
 });
 
-// Displays all urls created
+// Redirects to /urls if logged in, otherwise
+// renders home with links to register or login
+app.get("/", (req, res) => {
+  let userID = req.cookies.user_id;
+  console.log(userID);
+  if (userID && users[userID]) {
+    res.redirect("/urls");
+  } else {
+    let templateVars = {
+      email: users[userID] ? users[userID].email : ""
+    }
+    res.render("home", templateVars);
+  }
+});
+
+// Registration page
+app.get("/register", (req, res) => {
+  let templateVars = {
+    userID: false,
+    username: ""
+  };
+    res.render("register", templateVars);
+});
+
+// Login page
+app.get("/login", (req, res) => {
+  let templateVars = {
+    userID: false,
+    username: ""
+  };
+  res.render("login", templateVars);
+});
+
+// Renders urls_index if logged in, otherwise redirects to '/'
 app.get('/urls', (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    username: users[req.cookies.user_id] ? users[req.cookies.user_id].email : ""
-  };
-  res.render("urls_index", templateVars);
+  let userID = req.cookies.user_id;
+  if (userID && users[userID]) {
+    let templateVars = {
+      // pass in subset of database that is pertaining to userID
+      urls: urlsForUser(userID),
+      email: users[userID].email
+    };
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/");
+  }
 });
 
-// Add new url
+// Renders urls_new if logged in, otherwise redirects to '/'
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    username: req.cookies.user_id
-  };
-  res.render("urls_new", templateVars);
+  let userID = req.cookies.user_id;
+  if (userID && users[userID]) {
+    let templateVars = {
+      email: users[userID].email
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/");
+  }
 });
 
+// Renders url show page allowing user to edit the url
+// If user is not logged in, redirects user to home page
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
-    username: req.cookies.user_id
-  };
-  res.render("urls_show", templateVars);
+  let userID = req.cookies.user_id;
+  let shortURL = req.params.id;
+  if (userID && users[userID]) {
+    let templateVars = {
+      shortURL: shortURL,
+      url: urlDatabase[shortURL].url,
+      email: users[userID].email
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect("/");
+  }
 });
 
 app.get("/u/:shortURL", (req,res) => {
-  res.redirect(urlDatabase[req.params.shortURL]);
+  res.redirect(urlDatabase[req.params.shortURL].url);
 });
 
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-// Registration page
-app.get("/register", (req, res) => {
-    res.render("register");
-});
-
-// Login page
-app.get("/login", (req, res) => {
-  res.render("login");
-});
-
 /* POST REQUESTS */
 
-// Server-side - handles the post request to delete URL
+// Handles the post request to delete URL,
+// Displays 403 error if user is not the creator of the URL.
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  let userID = req.cookies.user_id;
+  let shortURL = req.params.id;
+  if (userID === urlDatabase[shortURL].userID) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.sendStatus(403);
+  }
 });
 
-// Server-side - handles the post request to update URL
+// Handles the post request to update URL,
+// Displays 403 error if the user is not the creator of the URL.
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newURL;
-  res.redirect("/urls");
+  let userID = req.cookies.user_id;
+  let shortURL = req.params.id;
+  if (userID === urlDatabase[shortURL].userID) {
+    urlDatabase[shortURL] = req.body.newURL;
+    res.redirect("/urls");
+  } else {
+    res.sendStatus(403);
+  }
 });
 
 // Redirect to edit url page.
 app.post("/urls", (req, res) => {
   let newShortURL = generateRandomString();
-  urlDatabase[newShortURL] = req.body.longURL;
+  urlDatabase[newShortURL] = { url: req.body.longURL, userID: req.cookies.user_id };
   res.redirect(`/urls/${newShortURL}`);
 });
 
@@ -146,7 +216,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// Registrtion
+// Registration
 app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
