@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 /* ENVIRONMENT SETUP & CONFIGURATION */
 app.set('view engine', 'ejs');
@@ -39,7 +40,7 @@ const users = {
 }
 
 /* HELPER FUNCTIONS */
-// Function that generates a random shortURL
+// Function that generates a random string of 6 characters
 function generateRandomString() {
     let newURL = "";
     const dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -71,6 +72,25 @@ function urlsForUser(id) {
   return result;
 }
 
+// Function that obtains password associated with user login input
+function findUser(email, password) {
+  // iterate through the users database
+  for (var user in users) {
+    // checks if the inputted email is equal to an email in the user database
+    if (users[user].email === email) {
+      // if the email is equal to the email in the user database then check
+      // if the email's password is equal to the bcryptted password in the user database
+      if (bcrypt.compareSync(password, users[user].password)) {
+        return user;
+      } else {
+        return undefined;
+      }
+    }
+  }
+  // if the inputted email is not an email in the user database
+  return undefined;
+}
+
 /* GET REQUEST RESPONSES */
 
 // Display object of all urls
@@ -87,7 +107,6 @@ app.get("/users.json", (req, res) => {
 // renders home with links to register or login
 app.get("/", (req, res) => {
   let userID = req.cookies.user_id;
-  console.log(userID);
   if (userID && users[userID]) {
     res.redirect("/urls");
   } else {
@@ -119,9 +138,10 @@ app.get("/login", (req, res) => {
 // Renders urls_index if logged in, otherwise redirects to '/'
 app.get('/urls', (req, res) => {
   let userID = req.cookies.user_id;
+  console.log(userID);
   if (userID && users[userID]) {
     let templateVars = {
-      // pass in subset of database that is pertaining to userID
+      // passes in subset of database that is pertaining to userID
       urls: urlsForUser(userID),
       email: users[userID].email
     };
@@ -206,8 +226,19 @@ app.post("/urls", (req, res) => {
 
 // To login
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.username);
-  res.redirect("/urls");
+  let email = req.body.email;
+  let password = req.body.password;
+  if (!email || !password) {
+    res.sendStatus(400);
+  } else {
+    let userID = findUser (email, password);
+    if (userID) {
+      res.cookie("user_id", userID);
+      res.redirect("/urls");
+    } else {
+      res.sendStatus(403);
+    }
+  }
 });
 
 // To logout
@@ -225,7 +256,7 @@ app.post("/register", (req, res) => {
   } else {
     if(canRegister(email)) {
       let newUserId = generateRandomString();
-      users[newUserId] = {id: newUserId, email: email, password: password};
+      users[newUserId] = {id: newUserId, email: email, password: bcrypt.hashSync(password, 10)};
       res.cookie("user_id", newUserId);
       res.redirect("/urls")
     } else {
