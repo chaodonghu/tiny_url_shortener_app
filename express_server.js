@@ -2,13 +2,18 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
+//const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 
 /* ENVIRONMENT SETUP & CONFIGURATION */
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: "session",
+  keys: ["A mysterious key"],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 
 /* GLOBAL VARIABLES */
 // Defines PORT 8080
@@ -106,7 +111,7 @@ app.get("/users.json", (req, res) => {
 // Redirects to /urls if logged in, otherwise
 // renders home with links to register or login
 app.get("/", (req, res) => {
-  let userID = req.cookies.user_id;
+  let userID = req.session.user_id;
   if (userID && users[userID]) {
     res.redirect("/urls");
   } else {
@@ -137,8 +142,7 @@ app.get("/login", (req, res) => {
 
 // Renders urls_index if logged in, otherwise redirects to '/'
 app.get('/urls', (req, res) => {
-  let userID = req.cookies.user_id;
-  console.log(userID);
+  let userID = req.session.user_id;
   if (userID && users[userID]) {
     let templateVars = {
       // passes in subset of database that is pertaining to userID
@@ -153,7 +157,7 @@ app.get('/urls', (req, res) => {
 
 // Renders urls_new if logged in, otherwise redirects to '/'
 app.get("/urls/new", (req, res) => {
-  let userID = req.cookies.user_id;
+  let userID = req.session.user_id;
   if (userID && users[userID]) {
     let templateVars = {
       email: users[userID].email
@@ -167,7 +171,7 @@ app.get("/urls/new", (req, res) => {
 // Renders url show page allowing user to edit the url
 // If user is not logged in, redirects user to home page
 app.get("/urls/:id", (req, res) => {
-  let userID = req.cookies.user_id;
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
   if (userID && users[userID]) {
     let templateVars = {
@@ -194,7 +198,7 @@ app.get("/hello", (req, res) => {
 // Handles the post request to delete URL,
 // Displays 403 error if user is not the creator of the URL.
 app.post("/urls/:id/delete", (req, res) => {
-  let userID = req.cookies.user_id;
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
   if (userID === urlDatabase[shortURL].userID) {
     delete urlDatabase[req.params.id];
@@ -207,10 +211,13 @@ app.post("/urls/:id/delete", (req, res) => {
 // Handles the post request to update URL,
 // Displays 403 error if the user is not the creator of the URL.
 app.post("/urls/:id", (req, res) => {
-  let userID = req.cookies.user_id;
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
   if (userID === urlDatabase[shortURL].userID) {
-    urlDatabase[shortURL] = req.body.newURL;
+    urlDatabase[shortURL] = {
+      url: req.body.newURL,
+      userID: userID,
+    }
     res.redirect("/urls");
   } else {
     res.sendStatus(403);
@@ -220,7 +227,7 @@ app.post("/urls/:id", (req, res) => {
 // Redirect to edit url page.
 app.post("/urls", (req, res) => {
   let newShortURL = generateRandomString();
-  urlDatabase[newShortURL] = { url: req.body.longURL, userID: req.cookies.user_id };
+  urlDatabase[newShortURL] = { url: req.body.longURL, userID: req.session.user_id };
   res.redirect(`/urls/${newShortURL}`);
 });
 
@@ -233,7 +240,7 @@ app.post("/login", (req, res) => {
   } else {
     let userID = findUser (email, password);
     if (userID) {
-      res.cookie("user_id", userID);
+      req.session.user_id = userID;
       res.redirect("/urls");
     } else {
       res.sendStatus(403);
@@ -243,7 +250,7 @@ app.post("/login", (req, res) => {
 
 // To logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session.user_id = null;
   res.redirect("/urls");
 });
 
@@ -257,14 +264,13 @@ app.post("/register", (req, res) => {
     if(canRegister(email)) {
       let newUserId = generateRandomString();
       users[newUserId] = {id: newUserId, email: email, password: bcrypt.hashSync(password, 10)};
-      res.cookie("user_id", newUserId);
+      req.session.user_id = newUserId;
       res.redirect("/urls")
     } else {
       res.sendStatus(403);
     }
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

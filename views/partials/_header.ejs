@@ -1,13 +1,40 @@
+<style>
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #111;
+}
+</style>
 <center>
-      <a href="/">Home</a>
-      <a href="/urls/new">Add URL</a>
-      <a href="/urls/">My URLS</a>
+  <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/urls/new">Add URL</a></li>
+      <li><a href="/urls/">List of URLS</a></li>
+  </ul>
 <center>
   <header>
     <%if (email){%>
-      <h2><%= email %></h2>
+      <h2>Welcome <%= email %></h2>
       <form action="/logout" method="POST">
-        <input class="button" type="submit" value="logout">
+        <input class="button" type="submit" value="Logout">
       </form>
     <% } else { %>
       <form action="/login" method="GET">
