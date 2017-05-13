@@ -1,4 +1,4 @@
-/* DEPENDENCIES */
+/* ----- DEPENDENCIES ----- */
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -6,7 +6,8 @@ const cookieSession = require('cookie-session')
 //const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 
-/* ENVIRONMENT SETUP & CONFIGURATION */
+/* ----- ENVIRONMENT SETUP & CONFIGURATION ----- */
+app.use(express.static('public'))
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -15,7 +16,7 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-/* GLOBAL VARIABLES */
+/* ----- GLOBAL VARIABLES ----- */
 // Defines PORT 8080
 const PORT = process.env.PORT || 8080; // default port 8080
 // Defines database of urls
@@ -29,7 +30,6 @@ const urlDatabase = {
     userID: "user2RandomID"
   }
 };
-
 // Defines database of users
 const users = {
   "userRandomID": {
@@ -44,7 +44,7 @@ const users = {
   }
 }
 
-/* HELPER FUNCTIONS */
+/* ----- HELPER FUNCTIONS ----- */
 // Function that generates a random string of 6 characters
 function generateRandomString() {
     let newURL = "";
@@ -109,7 +109,7 @@ app.get("/users.json", (req, res) => {
 });
 
 // Redirects to /urls if logged in, otherwise
-// renders home with links to register or login
+// renders homepage with links to register or login
 app.get("/", (req, res) => {
   let userID = req.session.user_id;
   if (userID && users[userID]) {
@@ -126,7 +126,9 @@ app.get("/", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars = {
     userID: false,
-    username: ""
+    username: "",
+    emailpass: false,
+    error: false,
   };
     res.render("register", templateVars);
 });
@@ -135,7 +137,9 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   let templateVars = {
     userID: false,
-    username: ""
+    username: "",
+    emailpass: false,
+    error: false,
   };
   res.render("login", templateVars);
 });
@@ -173,12 +177,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
+  // console.log(shortURL)
   if (userID && users[userID]) {
     let templateVars = {
       shortURL: shortURL,
       url: urlDatabase[shortURL].url,
       email: users[userID].email
     };
+    // console.log(templateVars.url)
     res.render("urls_show", templateVars);
   } else {
     res.redirect("/");
@@ -236,14 +242,26 @@ app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   if (!email || !password) {
-    res.sendStatus(400);
+    let templateVars = {
+      userID: false,
+      username: "",
+      error: true,
+      errorMsg: "Please fill in required fields"
+    };
+    res.render("login", templateVars);
   } else {
     let userID = findUser (email, password);
     if (userID) {
       req.session.user_id = userID;
       res.redirect("/urls");
     } else {
-      res.sendStatus(403);
+      let templateVars = {
+        userID: false,
+        username: "",
+        error: true,
+        errorMsg: "Incorrect credientials"
+      };
+      res.render("login", templateVars);
     }
   }
 });
@@ -259,7 +277,13 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   if (!email || !password) {
-    res.sendStatus(400);
+    let templateVars = {
+      userID: false,
+      username: "",
+      error: true,
+      errorMsg: "Please fill in required fields"
+    };
+    res.render("register", templateVars);
   } else {
     if(canRegister(email)) {
       let newUserId = generateRandomString();
@@ -267,7 +291,13 @@ app.post("/register", (req, res) => {
       req.session.user_id = newUserId;
       res.redirect("/urls")
     } else {
-      res.sendStatus(403);
+      let templateVars = {
+        userID: false,
+        username: "",
+        error: true,
+        errorMsg: "Email already exists in database"
+      };
+      res.render("register", templateVars);
     }
   }
 });

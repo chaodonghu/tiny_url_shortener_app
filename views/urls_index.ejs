@@ -1,49 +1,50 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>TinyApp</title>
-    <style>
-      body {
-        background-color: skyblue;
-        font-family: verdana;
-        color: #fff;
-        padding: 30px;
-      }
-      h1 {
-        font-size: 48px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-align: center;
-        color: white;
-      }
-      p {
-        font-size: 16px;
-        text-align: center;
-      }
-      table#t01 {
-        width:100%;
-        padding: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <% include ./partials/_header %>
-    </header>
-    <h2>Your list of URLS</h2>
-    <table id = "t01">
-      <% for (var url in urls) { %>
-        <tr>
-        <td>
-          <form id = 'delete-url' method="POST" action="/urls/<%= url %>/delete">
-            <td><a href="<%= urls[url] %>"><%= url %></a> -> <%= urls[url].url %></td>
-            <td><a href="/urls/<%= url %>">Edit</a></td>
-            <td><button type='submit' value='Delete'/>Delete</button></td>
-          </form>
-        </td>
-      </tr>
-      <% }; %>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    </table>
-  </body>
+  <title>URL Shortener - TinyApp</title>
+  <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link href="/css/styles.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+  <header>
+    <% include ./partials/_header %>
+  </header>
+
+          <h2>Your list of URLS</h2>
+          <div class="row">
+
+            <div class="col-lg-12">
+              <table style="width: 80%">
+                <% for (var url in urls) { %>
+                  <tr style="height: 30px">
+                  <td style="width: 50px">
+                    <form id = 'delete-url' method="POST" action="/urls/<%= url %>/delete">
+                      <td style="width: 10px"><a href="http://<%= urls[url].url %>"><%= url %></a> -> <%= urls[url].url %></td>
+                      <td style="width: 10px"><a href="/urls/<%= url %>">Edit</a></td>
+                      <td style="width: 10px"><button type='submit' value='Delete'/>Delete</button></td>
+                    </form>
+                  </td>
+                </tr>
+                <% }; %>
+
+              </table>
+
+            <div class="col-lg-12">
+              <div id="link"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="javascripts/shorten.js"></script>
+</body>
 </html>
