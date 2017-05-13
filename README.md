@@ -4,9 +4,13 @@
 
 ## Final Product
 !["Screenshot of Home Page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/home.png?raw=true)
+Home page.
 !["Screenshot of Register Page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/register.png?raw=true)
+Registration page.
 !["Screenshot of list of URLS page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/listofurls.png?raw=true)
+Page that displays list of URLS user has submitted
 !["Screenshot of Update URLS page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/updateurls.png?raw=true)
+Page that displays the option for users to update their long URL
 
 ## DEPENDENCIES
 
