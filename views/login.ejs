@@ -11,6 +11,14 @@
   <link href="/css/styles.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
+  <div class="header">
+  <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/urls/new">Add URL</a></li>
+      <li><a href="/urls/">List of URLS</a></li>
+  </ul>
+<center>
+  <header>
 
   <!-- Shows error message if there is no email or password entered or
   if there is a email that is already registered  -->
@@ -21,7 +29,7 @@
       <%= errorMsg %>
     </div>
   <% } %>
-  
+
   <div class="site-wrapper">
     <div class="site-wrapper-inner">
       <div class="main-container">
@@ -61,6 +69,5 @@
 
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-  <script src="javascripts/shorten.js"></script>
 </body>
 </html>

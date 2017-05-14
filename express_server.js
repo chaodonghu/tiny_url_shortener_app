@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session')
-//const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 
 /* ----- ENVIRONMENT SETUP & CONFIGURATION ----- */
@@ -49,7 +48,7 @@ const users = {
 function generateRandomString() {
     let newURL = "";
     const dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i++) {
       newURL += dictionary[Math.floor(Math.random() * dictionary.length)];
     }
    return newURL;
@@ -57,8 +56,8 @@ function generateRandomString() {
 
 // Function that checks if the entered email is already in the
 // users database
-function canRegister(email) {
-  for (var id in users) {
+const canRegister = (email) => {
+  for (let id in users) {
     if (users[id].email === email) {
       return false;
     }
@@ -67,9 +66,9 @@ function canRegister(email) {
 }
 
 // Function that obtains urls associated with userID
-function urlsForUser(id) {
-  var result = {};
-  for (var shortURL in urlDatabase) {
+const urlsForUser = (id) => {
+  let result = {};
+  for (let shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === id) {
       result[shortURL] = urlDatabase[shortURL];
     }
@@ -78,9 +77,9 @@ function urlsForUser(id) {
 }
 
 // Function that obtains password associated with user login input
-function findUser(email, password) {
+const findUser = (email, password) => {
   // iterate through the users database
-  for (var user in users) {
+  for (let user in users) {
     // checks if the inputted email is equal to an email in the user database
     if (users[user].email === email) {
       // if the email is equal to the email in the user database then check
@@ -88,7 +87,7 @@ function findUser(email, password) {
       if (bcrypt.compareSync(password, users[user].password)) {
         return user;
       } else {
-        return undefined;
+        return false;
       }
     }
   }
@@ -96,7 +95,7 @@ function findUser(email, password) {
   return undefined;
 }
 
-/* GET REQUEST RESPONSES */
+/* ----- GET REQUEST RESPONSES ----- */
 
 // Display object of all urls
 app.get("/urls.json", (req, res) => {
@@ -192,14 +191,14 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req,res) => {
-  res.redirect(urlDatabase[req.params.shortURL].url);
+  res.redirect(`http://${urlDatabase[req.params.shortURL].url}`);
 });
 
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-/* POST REQUESTS */
+/* ----- POST REQUESTS ----- */
 
 // Handles the post request to delete URL,
 // Displays 403 error if user is not the creator of the URL.
@@ -281,13 +280,17 @@ app.post("/register", (req, res) => {
       userID: false,
       username: "",
       error: true,
-      errorMsg: "Please fill in required fields"
+      errorMsg: "Please fill in required fields",
     };
     res.render("register", templateVars);
   } else {
     if(canRegister(email)) {
       let newUserId = generateRandomString();
-      users[newUserId] = {id: newUserId, email: email, password: bcrypt.hashSync(password, 10)};
+      users[newUserId] = {
+        id: newUserId,
+        email: email,
+        password: bcrypt.hashSync(password, 10)
+      };
       req.session.user_id = newUserId;
       res.redirect("/urls")
     } else {
