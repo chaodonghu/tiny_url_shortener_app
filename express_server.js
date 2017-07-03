@@ -46,6 +46,7 @@ const users = {
 /* ----- HELPER FUNCTIONS ----- */
 // Function that generates a random string of 6 characters
 function generateRandomString() {
+    "use strict";
     let newURL = "";
     const dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (let i = 0; i < 6; i++) {

@@ -15,7 +15,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node express_server.js"
+    "start": "node --use_strict express_server.js"
   },
   "keywords": [
     "url",
