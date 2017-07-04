@@ -1,20 +1,22 @@
-# TinyApp Project
+# TinyURL Shortener App
 
 **TinyApp** is a full stack web application built with Node and Express that allows users to shorten long URLs (like bit.ly and tinyURL)
 
-**DEMO**
-https://tiny-url-app.herokuapp.com/
+**Demo**
+* https://tiny-url-app.herokuapp.com/
+
+## Getting Started
+* Git clone the repository
+* Install all dependencies (using the `npm install` command).
+* Run the development web server using the `node express_server.js` command.
 
 ## Final Product
-!["Screenshot of Home Page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/home.png?raw=true)
-Home page.
-!["Screenshot of Register Page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/register.png?raw=true)
-Registration page.
-!["Screenshot of list of URLS page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/listofurls.png?raw=true)
-Page that displays list of URLS user has submitted, permitting the user to edit their tinyURls.
+!['TinyApp'](./assets/tinyapp.gif)
 
-!["Screenshot of Update URLS page"](https://github.com/chaodonghu/Week2---Tiny-URL-App/blob/master/docs/updateurls.png?raw=true)
-Page that displays the option for users to update their long URL
+## Features
+* Login page with user authentication and flash messages
+* Page that displays list of tiny URLS user has submitted, permitting the user to edit their tinyURLS
+* Page that allows users to update their long URLs
 
 ## Dependencies
 
@@ -24,7 +26,3 @@ Page that displays the option for users to update their long URL
 * bcrypt
 * body-parser
 * cookie-session
-
-# Getting Started
-* Install all dependencies (using the `npm install` command).
-* Run the development web server using the `node express_server.js` command.
