@@ -1,6 +1,8 @@
 # TinyURL Shortener App
 
-**TinyApp** is a full stack web application built with Node and Express that allows users to shorten long URLs (like bit.ly and tinyURL)
+An application that replicates URL shortening services like Bitly and TinyURL, this Tiny URL Shortener Clone allows users to register, log in, and create shortened versions of long URLs. (like bit.ly and tinyURL)
+
+Built with Node and Express.
 
 # Demo
 * https://tiny-url-app.herokuapp.com/
